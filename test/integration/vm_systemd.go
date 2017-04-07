@@ -19,7 +19,6 @@ limitations under the License.
 package integration
 
 import (
-	"runtime"
 	"strings"
 	"testing"
 
@@ -28,16 +27,13 @@ import (
 
 func testVMSystemd(t *testing.T) {
 	t.Parallel()
-	if runtime.GOOS == "windows" {
-		t.Skip("skipping test in windows as it doesn't exit properly")
-	}
 	minikubeRunner := util.MinikubeRunner{
 		Args:       *args,
 		BinaryPath: *binaryPath,
 		T:          t}
 
 	expectedStr := "0 loaded units listed"
-	sshCmdOutput := minikubeRunner.RunCommand("ssh -- systemctl --state=failed --all", true)
+	sshCmdOutput := minikubeRunner.RunCommand("ssh -- systemctl --state=failed --all --no-pager", true)
 	if !strings.Contains(sshCmdOutput, expectedStr) {
 		t.Logf("Expected no systemd units to be failed got:\n %s", sshCmdOutput)
 	}
